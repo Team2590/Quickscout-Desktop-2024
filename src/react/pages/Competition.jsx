@@ -1,14 +1,19 @@
 // @ts-nocheck
 import { useLocalStorage } from '@mantine/hooks'
 import { download, generateCsv, mkConfig } from 'export-to-csv'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useReducer, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+
+
 
 export default function Competition() {
     const { competition } = useParams()
     const [data, setData] = useLocalStorage({ key: competition, defaultValue: [] })
     const [scanData, setScanData] = useState()
     const formRef = useRef()
+    const [editingData, setEditingData] = useState({})
+    const [editing, setEditing] = useState(false)
+    const [editingId, setEditingId] = useState(0)
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -65,18 +70,91 @@ export default function Competition() {
         download(csvConfig)(csv)
     }
 
+    const handleDelete = (id) => {
+        const shouldDelete = confirm('Are you sure you want to delete?')
+        if (shouldDelete) {
+            setData(prevData => {
+                return prevData.filter(data => {
+                    return data.id != id
+                })
+            })
+        }
+    }
+
+    const enterEditing = (id) => {
+        setEditingData(data.filter(d => {
+            return d.id == id
+        })[0])
+        setEditingId(id)
+        setEditing(true)
+    }
+
+    const saveEdit = () => {
+        setData(prevData => {
+            const index = prevData.findIndex(data => {
+                return data.id == editingId
+            })
+            prevData[index] = editingData
+            return prevData
+        })
+        setEditing(false)
+    }
+
+    const handleEditDataInput = (key, value) => {
+        if (value === 'true') {
+            value = true;
+        } else if (value === 'false') {
+            value = false;
+        } else if (!isNaN(value)) {
+            value = Number(value);
+        }
+        setEditingData(prevData => {
+            return { ...prevData, [key]: value }
+        })
+    }
+
     return (
         <>
+            <div className={`modal ${editing ? 'd-block' : ''}`}>
+                <div className='modal-dialog'>
+                    <div className='modal-content'>
+                        <div className='modal-header'>
+                            <span className='h4'>{editingData.id}</span>
+                        </div>
+                        <div className='modal-body'>
+                            {Object.keys(editingData).map(key => {
+                                if (key != 'id') {
+                                    return (
+                                        <div key={key} className='d-flex flex-row align-items-baseline gap-3 mb-3'>
+                                            <span>{key}:</span>
+                                            <input
+                                                type='text'
+                                                className='form-control d-inline w-25'
+                                                value={editingData[key]}
+                                                onChange={(e) => handleEditDataInput(key, e.target.value)}
+                                            />
+                                        </div>
+                                    )
+                                }
+                            })}
+                        </div>
+                        <div className='modal-footer'>
+                            <button className='btn btn-success' onClick={saveEdit}>Confirm</button>
+                            <button className='btn btn-danger' onClick={() => setEditing(false)}>Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <Link to='/' className='m-1'>Home</Link>
             <h1 className='text-center mb-3'>{competition}</h1>
-            <div className="card card-body mx-auto" style={{ maxWidth: 600 }}>
+            <div className='card card-body mx-auto' style={{ maxWidth: 600 }}>
                 <form onSubmit={handleSubmit} ref={formRef}>
-                    <label htmlFor="exampleInputEmail1" className="form-label">Scan:</label>
+                    <label htmlFor='exampleInputEmail1' className='form-label'>Scan:</label>
                     <input
-                        type="text"
-                        className="form-control"
-                        id="competition-name"
-                        aria-describedby="emailHelp"
+                        type='text'
+                        className='form-control'
+                        id='competition-name'
+                        aria-describedby='emailHelp'
                         onChange={e => setScanData(e.target.value)}
                     />
                     <button className='btn btn-primary mt-3 w-100' type='submit'>Enter</button>
@@ -85,11 +163,15 @@ export default function Competition() {
                     <button className='btn btn-secondary' onClick={downloadCSV}>Download</button>
                 </div>
             </div>
-            {data && data.map(d => {
+            {data && [...data].reverse().map(d => {
                 return (
                     <div className='card card-body mx-auto my-4' style={{ maxWidth: 600 }}>
                         <p>Team: {d.teamNum} | Name: {d.scoutName} | Match: {d.matchNum} </p>
                         <pre>{JSON.stringify(d)}</pre>
+                        <div className='d-flex flex-row gap-2'>
+                            <button className='btn btn-danger' style={{ width: 'fit-content' }} onClick={() => handleDelete(d.id)}>Delete</button>
+                            <button className='btn btn-info' onClick={() => enterEditing(d.id)}>Edit</button>
+                        </div>
                     </div>
                 )
             })}

@@ -123,19 +123,17 @@ export default function Competition() {
                         </div>
                         <div className='modal-body'>
                             {Object.keys(editingData).map(key => {
-                                if (key != 'id') {
-                                    return (
-                                        <div key={key} className='d-flex flex-row align-items-baseline gap-3 mb-3'>
-                                            <span>{key}:</span>
-                                            <input
-                                                type='text'
-                                                className='form-control d-inline w-25'
-                                                value={editingData[key]}
-                                                onChange={(e) => handleEditDataInput(key, e.target.value)}
-                                            />
-                                        </div>
-                                    )
-                                }
+                                return (
+                                    <div key={key} className='d-flex flex-row align-items-baseline gap-3 mb-3'>
+                                        <span>{key}:</span>
+                                        <input
+                                            type='text'
+                                            className='form-control d-inline w-25'
+                                            value={editingData[key]}
+                                            onChange={(e) => handleEditDataInput(key, e.target.value)}
+                                        />
+                                    </div>
+                                )
                             })}
                         </div>
                         <div className='modal-footer'>

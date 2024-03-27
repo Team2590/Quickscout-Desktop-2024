@@ -5,7 +5,6 @@ import React, { useEffect, useReducer, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 
-
 export default function Competition() {
     const { competition } = useParams()
     const [data, setData] = useLocalStorage({ key: competition, defaultValue: [] })
@@ -14,6 +13,8 @@ export default function Competition() {
     const [editingData, setEditingData] = useState({})
     const [editing, setEditing] = useState(false)
     const [editingId, setEditingId] = useState(0)
+    const [deleting, setDeleting] = useState(false)
+    const [deletingId, setDeletingId] = useState(0)
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -21,11 +22,11 @@ export default function Competition() {
         const parsedScan = JSON.parse(scanData)
         parsedScan.map(value => {
             if (value === 'true') {
-                return true;
+                return true
             } else if (value === 'false') {
-                return false;
+                return false
             } else if (!isNaN(value)) {
-                return parseFloat(value);
+                return parseFloat(value)
             }
         })
         const actualData = {
@@ -70,15 +71,18 @@ export default function Competition() {
         download(csvConfig)(csv)
     }
 
-    const handleDelete = (id) => {
-        const shouldDelete = confirm('Are you sure you want to delete?')
-        if (shouldDelete) {
-            setData(prevData => {
-                return prevData.filter(data => {
-                    return data.id != id
-                })
+    const enterDeleting = (id) => {
+        setDeleting(true)
+        setDeletingId(id)
+    }
+
+    const deleteEntry = () => {
+        setData(prevData => {
+            return prevData.filter(data => {
+                return data.id != deletingId
             })
-        }
+        })
+        setDeleting(false)
     }
 
     const enterEditing = (id) => {
@@ -102,11 +106,11 @@ export default function Competition() {
 
     const handleEditDataInput = (key, value) => {
         if (value === 'true') {
-            value = true;
+            value = true
         } else if (value === 'false') {
-            value = false;
+            value = false
         } else if (!isNaN(value)) {
-            value = Number(value);
+            value = Number(value)
         }
         setEditingData(prevData => {
             return { ...prevData, [key]: value }
@@ -115,7 +119,7 @@ export default function Competition() {
 
     return (
         <>
-            <div className={`modal ${editing ? 'd-block' : ''}`}>
+            <div className={`modal ${editing ? 'd-block' : ''}`} aria-hidden={editing}>
                 <div className='modal-dialog'>
                     <div className='modal-content'>
                         <div className='modal-header'>
@@ -139,6 +143,23 @@ export default function Competition() {
                         <div className='modal-footer'>
                             <button className='btn btn-success' onClick={saveEdit}>Confirm</button>
                             <button className='btn btn-danger' onClick={() => setEditing(false)}>Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className={`modal ${deleting ? 'd-block' : ''}`} aria-labelledby='deleteModalLabel' aria-hidden={deleting}>
+                <div class='modal-dialog'>
+                    <div class='modal-content'>
+                        <div class='modal-header'>
+                            <h1 class='modal-title fs-5' id='deleteModalLabel'>Confirm</h1>
+                            <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                        </div>
+                        <div class='modal-body'>
+                            <p>Are you sure that you want to delete this entry?</p>
+                        </div>
+                        <div class='modal-footer'>
+                            <button type='button' class='btn btn-success' onClick={deleteEntry}>Yes</button>
+                            <button type='button' class='btn btn-danger' onClick={() => setDeleting(false)}>No</button>
                         </div>
                     </div>
                 </div>
@@ -167,7 +188,7 @@ export default function Competition() {
                         <p>Team: {d.teamNum} | Name: {d.scoutName} | Match: {d.matchNum} </p>
                         <pre>{JSON.stringify(d)}</pre>
                         <div className='d-flex flex-row gap-2'>
-                            <button className='btn btn-danger' style={{ width: 'fit-content' }} onClick={() => handleDelete(d.id)}>Delete</button>
+                            <button className='btn btn-danger' style={{ width: 'fit-content' }} onClick={() => enterDeleting(d.id)}>Delete</button>
                             <button className='btn btn-info' onClick={() => enterEditing(d.id)}>Edit</button>
                         </div>
                     </div>

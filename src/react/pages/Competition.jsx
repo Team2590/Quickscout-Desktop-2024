@@ -46,7 +46,7 @@ export default function Competition() {
             ampMissed_tp: parsedScan[11],
             coopertition: parsedScan[12],
             climbLvl: parsedScan[13],
-            trap: parsedScan[14],
+            trap: parseInt(parsedScan[14]),
             traverseChain: parsedScan[17],
             twoRobots: parsedScan[18],
             droppedWhenHit: parsedScan[21]

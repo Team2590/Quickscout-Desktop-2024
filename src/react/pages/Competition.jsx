@@ -49,7 +49,8 @@ export default function Competition() {
             trap: parseInt(parsedScan[14]),
             traverseChain: parsedScan[17],
             twoRobots: parsedScan[18],
-            droppedWhenHit: parsedScan[21]
+            droppedWhenHit: parsedScan[21],
+            notesFed: parsedScan[22]
         }
         setData(prevData => {
             if (prevData) {

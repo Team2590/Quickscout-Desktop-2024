@@ -29,28 +29,41 @@ export default function Competition() {
                 return parseFloat(value)
             }
         })
+        console.log(parsedScan[21])
         const actualData = {
             id: JSON.parse(localStorage.getItem(competition)).length ? JSON.parse(localStorage.getItem(competition)).length + 1 : 1,
             matchNum: parsedScan[0],
             teamNum: parsedScan[1],
-            scoutName: parsedScan[23],
-            startingPos: parsedScan[2],
-            leaveWing: parsedScan[3],
-            spkrMade_atn: parsedScan[4],
-            spkrMissed_atn: parsedScan[5],
-            ampMade_atn: parsedScan[6],
-            ampMissed_atn: parsedScan[7],
-            spkrMade_tp: parsedScan[8],
-            spkrMissed_tp: parsedScan[9],
-            ampMade_tp: parsedScan[10],
-            ampMissed_tp: parsedScan[11],
-            coopertition: parsedScan[12],
-            climbLvl: parsedScan[13],
-            trap: parseInt(parsedScan[14]),
-            traverseChain: parsedScan[17],
-            twoRobots: parsedScan[18],
-            droppedWhenHit: parsedScan[21],
-            notesFed: parsedScan[22]
+            scoutName: parsedScan[2],
+            startingPos: parsedScan[3],
+            leaveWing: parsedScan[4],
+            spkrMade_atn: parsedScan[5],
+            spkrMissed_atn: parsedScan[6],
+            ampMade_atn: parsedScan[7],
+            ampMissed_atn: parsedScan[8],
+            spkrMade_tp: parsedScan[9],
+            spkrMissed_tp: parsedScan[10],
+            ampMade_tp: parsedScan[11],
+            ampMissed_tp: parsedScan[12],
+            coopertition: parsedScan[13],
+            climbLvl: parsedScan[14],
+            trap: parseInt(parsedScan[15]),
+            traverseChain: parsedScan[16],
+            twoRobots: parsedScan[17],
+            droppedWhenHit: parsedScan[18],
+            notesFed: parsedScan[19],
+            preloadNote: parsedScan[20],
+            autoNote1: parsedScan[21][0],
+            autoNote2: parsedScan[21][1],
+            autoNote3: parsedScan[21][2],
+            autoNote4: parsedScan[21][3],
+            autoNote5: parsedScan[21][4],
+            autoNote6: parsedScan[21][5],
+            autoNote7: parsedScan[21][6],
+            autoNote8: parsedScan[21][7],
+            autoNote9: parsedScan[21][8],
+            autoNote10: parsedScan[21][9],
+            autoNote11: parsedScan[21][10],
         }
         setData(prevData => {
             if (prevData) {
@@ -183,9 +196,9 @@ export default function Competition() {
                     <button className='btn btn-secondary' onClick={downloadCSV}>Download</button>
                 </div>
             </div>
-            {data && [...data].reverse().map(d => {
+            {data && [...data].reverse().map((d, i) => {
                 return (
-                    <div className='card card-body mx-auto my-4' style={{ maxWidth: 600 }}>
+                    <div className='card card-body mx-auto my-4' style={{ maxWidth: 600 }} key={i}>
                         <p>Team: {d.teamNum} | Name: {d.scoutName} | Match: {d.matchNum} </p>
                         <pre>{JSON.stringify(d)}</pre>
                         <div className='d-flex flex-row gap-2'>

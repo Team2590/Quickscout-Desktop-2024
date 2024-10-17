@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useLocalStorage } from '@mantine/hooks'
 import { download, generateCsv, mkConfig } from 'export-to-csv'
+import { saveAs } from 'file-saver'
 import React, { useEffect, useReducer, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
@@ -83,6 +84,11 @@ export default function Competition() {
         })
         const csv = generateCsv(csvConfig)(data)
         download(csvConfig)(csv)
+    }
+
+    const downloadJSON = () => {
+        const blob = new Blob([JSON.stringify(data)], { type: 'text/plain;charset=utf-8' })
+        saveAs(blob, 'generated.json')
     }
 
     const enterDeleting = (id) => {
@@ -193,7 +199,13 @@ export default function Competition() {
                     <button className='btn btn-primary mt-3 w-100' type='submit'>Enter</button>
                 </form>
                 <div className='mt-3'>
-                    <button className='btn btn-secondary' onClick={downloadCSV}>Download</button>
+                    <div className='dropdown'>
+                        <button className='btn btn-secondary dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'> Download</button>
+                        <ul className='dropdown-menu'>
+                            <li className='dropdown-item' onClick={downloadCSV}>Download CSV</li>
+                            <li className='dropdown-item' onClick={downloadJSON}>Download JSON</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             {data && [...data].reverse().map((d, i) => {
